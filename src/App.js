@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
 let theInterval = null;
@@ -16,8 +17,7 @@ class App extends React.Component {
   // we are gonna use inline style
   styles = {
     position: 'fixed',
-    top: 150,
-    left: 150,
+    top: 80,
   };
 
   detectFromVideoFrame = (model, video) => {
@@ -43,13 +43,28 @@ class App extends React.Component {
     newObjects.forEach(newObj => {
       allObjects.forEach(obj => {
         const {height, width, title} = newObj;
-        if((height === obj.height || width === obj.width) && title === obj.title ) {
-          obj.latestTimestamp = Date.now();
+
+        const heightAbsDiff = Math.abs(Math.floor(height) - Math.floor(obj.height));
+        const widthAbsDiff = Math.abs(Math.floor(width) === Math.floor(obj.width));
+
+        console.log(heightAbsDiff, widthAbsDiff);
+        console.log(title, obj.title);
+
+        if(title !== "person" && (heightAbsDiff < 20 && widthAbsDiff < 20 && title === obj.title)) {
+          const latestTimestamp = Date.now();
+          obj.latestTimestamp = latestTimestamp;
           updatedObj.push(obj);
+
+          if(latestTimestamp - obj.timestamp >= 10000) { // checking for timestamp only...
+            console.log('Unattended object detected');
+          }
+        } else {
+          newObj.timestamp = Date.now();
         }
       });
     });
-    this.setState({allObjects: updatedObj});
+
+    if(allObjects.length) this.setState({ allObjects: updatedObj });
   }
 
   showDetections = predictions => {
@@ -67,11 +82,11 @@ class App extends React.Component {
       const width = prediction.bbox[2];
       const height = prediction.bbox[3];
       const title = prediction.class;
-      newObjects.push({ x, y, width, height });
+      newObjects.push({ x, y, width, height, title });
       // Draw the bounding box.
       ctx.strokeStyle = "#2fff00";
       ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, width, height, title);
+      ctx.strokeRect(x, y, width, height);
 
       // Draw the label background.
       ctx.fillStyle = "#2fff00";
@@ -88,8 +103,14 @@ class App extends React.Component {
       ctx.fillText(prediction.score.toFixed(2), x, y + height - textHeight);
     });
 
-    console.log(newObjects);
-    newObjects.length && this.matchObjects(newObjects);
+    console.log(this.state.allObjects);
+
+    if(this.state.allObjects.length === 0) {
+      const addedTimeStampObj = newObjects.map(n => ({...n, timestamp: Date.now()}));
+      this.setState({allObjects: addedTimeStampObj});
+    } else {
+      newObjects.length && this.matchObjects(newObjects);
+    }
   };
 
   componentDidMount() {
@@ -140,19 +161,38 @@ class App extends React.Component {
   // so we are in someway drawing our video "on the go"
   render() {
     return (
-      <div>
-        <video
-          style={this.styles}
+      <StyledRootCotainer>
+        <VideoContainer
           autoPlay
           muted
           ref={this.videoRef}
-          width="720"
-          height="600"
         />
-        <canvas style={this.styles} ref={this.canvasRef} width="720" height="650" />
-      </div>
+        <CanvasContainer style={this.styles} ref={this.canvasRef} />
+      </StyledRootCotainer>
     );
   }
 }
 
 export default App;
+
+const StyledRootCotainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const VideoContainer = styled.video`
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  height: 600px;
+  width: 600px;
+`;
+
+const CanvasContainer = styled.canvas`
+  position: absolute;
+  top: 10vh;
+  left: 10vw;
+  height: 600px;
+  width: 600px;
+`;
