@@ -1,10 +1,16 @@
 import React from 'react';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
+let theInterval = null;
+
 class App extends React.Component {
   // reference to both the video and canvas
   videoRef = React.createRef();
   canvasRef = React.createRef();
+
+  state = {
+    shouldTakeSnapshot: true,
+  }
 
   // we are gonna use inline style
   styles = {
@@ -15,14 +21,18 @@ class App extends React.Component {
 
   detectFromVideoFrame = (model, video) => {
     model.detect(video).then(predictions => {
-      this.showDetections(predictions);
+      // showDetection after 5secs only....
+      if(this.state.shouldTakeSnapshot) {
+        this.showDetections(predictions);
+        this.setState({shouldTakeSnapshot: false});
+      }
 
       requestAnimationFrame(() => {
         this.detectFromVideoFrame(model, video);
       });
     }, (error) => {
-      console.log("Couldn't start the webcam")
-      console.error(error)
+      console.log("Couldn't start the webcam");
+      console.error(error);
     });
   };
 
@@ -42,6 +52,7 @@ class App extends React.Component {
       ctx.strokeStyle = "#2fff00";
       ctx.lineWidth = 1;
       ctx.strokeRect(x, y, width, height);
+
       // Draw the label background.
       ctx.fillStyle = "#2fff00";
       const textWidth = ctx.measureText(prediction.class).width;
@@ -53,7 +64,7 @@ class App extends React.Component {
 
       // Draw the text last to ensure it's on top.
       ctx.fillStyle = "#000000";
-      ctx.fillText(prediction.class,x, y);
+      ctx.fillText(prediction.class, x, y);
       ctx.fillText(prediction.score.toFixed(2), x, y + height - textHeight);
     });
   };
@@ -72,6 +83,12 @@ class App extends React.Component {
           // pass the stream to the videoRef
           this.videoRef.current.srcObject = stream;
 
+          theInterval = setInterval(() => {
+            this.setState({
+              shouldTakeSnapshot: true,
+            });
+          }, 5000);
+
           return new Promise(resolve => {
             this.videoRef.current.onloadedmetadata = () => {
               resolve();
@@ -84,7 +101,7 @@ class App extends React.Component {
 
       // define a Promise that'll be used to load the model
       const loadlModelPromise = cocoSsd.load();
-      
+
       // resolve all the Promises
       Promise.all([loadlModelPromise, webcamPromise])
         .then(values => {
@@ -100,7 +117,7 @@ class App extends React.Component {
   // so we are in someway drawing our video "on the go"
   render() {
     return (
-      <div> 
+      <div>
         <video
           style={this.styles}
           autoPlay
