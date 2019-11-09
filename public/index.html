@@ -1,21 +1,51 @@
-
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>TensorFlow.js OBD Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+      * {
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .flex { display: flex; }
+      .justify-center { justify-content: center; }
+      .justify-between { justify-content: space-between; }
+      .align-center { align-items: center; }
+      body {
+        height: 100%;
+        width: 100%;
+        
+        background-color: #1b4296;
+      }
+      .metroText {
+        font-size: 32px;
+        color: white;
+        padding-left: 0.7rem;
+        font-weight: bold;
+      }
+      .dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: tomato;
+      }
+    </style>
+    <!-- <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script> -->
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>TensorFlow.js OBD Demo</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-  <style>
-    * {
-      font-family: sans-serif;
-    }
-  </style>
-  <!-- <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script> -->
-</head>
-
-<body>
-  <h1 style="text-align: center;">SERVILENS</h1>
-  <div id="root"></div>
-</body>
+  <body>
+    <div class="flex justify-between" style="padding: 20px 5% 0 5%">
+      <div class="flex align-center">
+        <div class="dot"></div>
+        <h1 class="metroText";">SERVI LENS</h1>
+      </div>
+      <div class="flex align-center">
+        <img src="Delhi_Metro_logo.svg" height="40px" width="40px" />
+        <p class="metroText">Delhi Metro Rail Corporation</p>
+      </div>
+    </div>
+    <div id="root"></div>
+  </body>
 </html>

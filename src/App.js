@@ -22,7 +22,7 @@ class App extends React.Component {
 
   detectFromVideoFrame = (model, video) => {
     model.detect(video).then(predictions => {
-      // showDetection after 5secs only....
+      // showDetection after 5 secs only....
       if(this.state.shouldTakeSnapshot) {
         this.showDetections(predictions);
         this.setState({shouldTakeSnapshot: false});
@@ -161,21 +161,23 @@ class App extends React.Component {
   // so we are in someway drawing our video "on the go"
   render() {
     return (
-      <StyledRootCotainer>
+      <StyledRootContainer>
         <VideoContainer
           autoPlay
           muted
           ref={this.videoRef}
+          height="490px"
+          width="650px"
         />
-        <CanvasContainer style={this.styles} ref={this.canvasRef} />
-      </StyledRootCotainer>
+        <CanvasContainer style={this.styles} ref={this.canvasRef} height="490px" width="650px" />
+      </StyledRootContainer>
     );
   }
 }
 
 export default App;
 
-const StyledRootCotainer = styled.div`
+const StyledRootContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -185,14 +187,10 @@ const VideoContainer = styled.video`
   position: absolute;
   top: 10vh;
   left: 10vw;
-  height: 600px;
-  width: 600px;
 `;
 
 const CanvasContainer = styled.canvas`
   position: absolute;
-  top: 10vh;
+  top: calc(10vh - 10px);
   left: 10vw;
-  height: 600px;
-  width: 600px;
 `;
