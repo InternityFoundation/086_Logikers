@@ -10,6 +10,7 @@ class App extends React.Component {
 
   state = {
     shouldTakeSnapshot: true,
+    allObjects: [],
   }
 
   // we are gonna use inline style
@@ -36,6 +37,21 @@ class App extends React.Component {
     });
   };
 
+  matchObjects = (newObjects) => {  // both newObjects and allObject are arrays....
+    const {allObjects} = this.state;
+    const updatedObj = [];
+    newObjects.forEach(newObj => {
+      allObjects.forEach(obj => {
+        const {height, width, title} = newObj;
+        if((height === obj.height || width === obj.width) && title === obj.title ) {
+          obj.latestTimestamp = Date.now();
+          updatedObj.push(obj);
+        }
+      });
+    });
+    this.setState({allObjects: updatedObj});
+  }
+
   showDetections = predictions => {
     const ctx = this.canvasRef.current.getContext("2d");
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -43,15 +59,19 @@ class App extends React.Component {
     ctx.font = font;
     ctx.textBaseline = "top";
 
+    const newObjects = [];
+
     predictions.forEach(prediction => {
       const x = prediction.bbox[0];
       const y = prediction.bbox[1];
       const width = prediction.bbox[2];
       const height = prediction.bbox[3];
+      const title = prediction.class;
+      newObjects.push({ x, y, width, height });
       // Draw the bounding box.
       ctx.strokeStyle = "#2fff00";
       ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, width, height);
+      ctx.strokeRect(x, y, width, height, title);
 
       // Draw the label background.
       ctx.fillStyle = "#2fff00";
@@ -67,6 +87,9 @@ class App extends React.Component {
       ctx.fillText(prediction.class, x, y);
       ctx.fillText(prediction.score.toFixed(2), x, y + height - textHeight);
     });
+
+    console.log(newObjects);
+    newObjects.length && this.matchObjects(newObjects);
   };
 
   componentDidMount() {
@@ -95,8 +118,8 @@ class App extends React.Component {
             };
           });
         }, (error) => {
-          console.log("Couldn't start the webcam")
-          console.error(error)
+          console.log("Couldn't start the webcam");
+          console.error(error);
         });
 
       // define a Promise that'll be used to load the model
