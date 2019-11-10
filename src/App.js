@@ -51,11 +51,12 @@ class App extends React.Component {
         console.log(heightAbsDiff, widthAbsDiff);
         console.log(title, obj.title);
 
-        if((heightAbsDiff < 20 && widthAbsDiff < 20 && title === obj.title)) {
+        if(title !== 'person' && (heightAbsDiff < 20 && widthAbsDiff < 20 && title === obj.title)) {
           const latestTimestamp = Date.now();
           obj.latestTimestamp = latestTimestamp;
           updatedObj.push(obj);
 
+          // checking for unattended object...
           if(latestTimestamp - obj.timestamp >= 5000) { // checking for timestamp only...
             console.log('Unattended object detected');
             const {suspectedObjects} = this.state;
@@ -218,8 +219,8 @@ class App extends React.Component {
           <Circle></Circle>
           <Text>Yellow Line - Metro 66438 - cach 3 - cam 2</Text>
           <RButton>Remind again</RButton>
-           <MButton>Mark safe</MButton>
-            <SButton>Send Notification</SButton>
+          <MButton>Mark safe</MButton>
+          <SButton>Send Notification</SButton>
         </PopupContainer>
       </StyledRootContainer>
     );
@@ -228,13 +229,12 @@ class App extends React.Component {
 
 export default App;
 
-
 const PopupContainer = styled.div`
   position: absolute;
-  width: 750px;
+  width: 65vw;
   height: 75px;
   background-color: #D7D7D7;
-  left: 10vw;
+  left: 1vw;
   bottom: 0;
 `;
 const RButton = styled.div`
@@ -242,36 +242,48 @@ background-color: #169BD5;
 height: 20px;
 width: 90px;
 position: absolute;
-top: 30px;
-left: 410px;
+top: 20px;
+left: 422px;
 text-align: center;
 font-size: small;
 border-radius: 5px;
 color: white;
+padding: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
 `;
 const SButton = styled.div`
 background-color: #D56216;
-height: 30px;
-width: 90px;
+height: 20px;
+width: 100px;
 position: absolute;
-top: 30px;
-left: 620px;
+top: 20px;
+left: 651px;
 text-align: center;
 font-size: small;
 border-radius: 5px;
 color: white;
+padding: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
 `;
 const MButton = styled.div`
 background-color: #1DA207;
 height: 20px;
 width: 90px;
 position: absolute;
-top: 30px;
-left: 510px;
+top: 20px;
+left: 536px;
 text-align: center;
 font-size: small;
 border-radius: 5px;
 color: white;
+padding: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
 `;
 const Text = styled.div`
 font-weight: bold;
@@ -298,7 +310,7 @@ const StyledRootContainer = styled.div`
 
 const StreamContainer = styled.div`
   width: 100%;
-  height: 80vh;
+  height: 90vh;
   background-color: white;
   margin-top: 5vh;
 `;
