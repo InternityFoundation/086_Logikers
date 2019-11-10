@@ -170,12 +170,81 @@ class App extends React.Component {
           width="650px"
         />
         <CanvasContainer style={this.styles} ref={this.canvasRef} height="490px" width="650px" />
+        <PopupContainer>
+          <Circle></Circle>
+          <Text>Yellow Line - Metro 66438 - cach 3 - cam 2</Text>
+          <RButton>Remind again</RButton>
+           <MButton>Mark safe</MButton>
+            <SButton>Send Notification</SButton>
+        </PopupContainer>
       </StyledRootContainer>
     );
   }
 }
 
 export default App;
+
+
+const PopupContainer = styled.div`
+  position: absolute;
+  width: 750px;
+  height: 75px;
+  background-color: #D7D7D7;
+  left: 10vw;
+  bottom: 0;
+`;
+const RButton = styled.div`
+background-color: #169BD5;
+height: 20px;
+width: 90px;
+position: absolute;
+top: 30px;
+left: 410px;
+text-align: center;
+font-size: small;
+border-radius: 5px;
+color: white;
+`;
+const SButton = styled.div`
+background-color: #D56216;
+height: 30px;
+width: 90px;
+position: absolute;
+top: 30px;
+left: 620px;
+text-align: center;
+font-size: small;
+border-radius: 5px;
+color: white;
+`;
+const MButton = styled.div`
+background-color: #1DA207;
+height: 20px;
+width: 90px;
+position: absolute;
+top: 30px;
+left: 510px;
+text-align: center;
+font-size: small;
+border-radius: 5px;
+color: white;
+`;
+const Text = styled.div`
+font-weight: bold;
+position: absolute;
+top: 30px;
+left: 80px;
+`;
+
+const Circle = styled.div`
+position: absolute;
+width:30px;
+height:30px;
+border-radius:50%;
+background-color: yellow;
+top: 25px;
+left: 40px;
+`;
 
 const StyledRootContainer = styled.div`
   display: flex;
