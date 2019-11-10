@@ -12,6 +12,7 @@ class App extends React.Component {
   state = {
     shouldTakeSnapshot: true,
     allObjects: [],
+    suspectedObjects: [],
   }
 
   // we are gonna use inline style
@@ -50,13 +51,21 @@ class App extends React.Component {
         console.log(heightAbsDiff, widthAbsDiff);
         console.log(title, obj.title);
 
-        if(title !== "person" && (heightAbsDiff < 20 && widthAbsDiff < 20 && title === obj.title)) {
+        if((heightAbsDiff < 20 && widthAbsDiff < 20 && title === obj.title)) {
           const latestTimestamp = Date.now();
           obj.latestTimestamp = latestTimestamp;
           updatedObj.push(obj);
 
-          if(latestTimestamp - obj.timestamp >= 10000) { // checking for timestamp only...
+          if(latestTimestamp - obj.timestamp >= 5000) { // checking for timestamp only...
             console.log('Unattended object detected');
+            const {suspectedObjects} = this.state;
+            let isAlreadyFlagged = false;
+            suspectedObjects.forEach(s => {
+              if(s.timestamp === obj.timestamp && s.latestTimestamp === obj.latestTimestamp) {
+                isAlreadyFlagged = true;
+              }
+            });
+            if(!isAlreadyFlagged) this.setState({suspectedObjects: [...suspectedObjects, obj]});
           }
         } else {
           newObj.timestamp = Date.now();
@@ -160,16 +169,51 @@ class App extends React.Component {
   // here we are returning the video frame and canvas to draw,
   // so we are in someway drawing our video "on the go"
   render() {
+    const {suspectedObjects} = this.state;
     return (
       <StyledRootContainer>
         <VideoContainer
           autoPlay
           muted
           ref={this.videoRef}
-          height="490px"
-          width="650px"
+          height="412px"
+          width="550px"
         />
-        <CanvasContainer style={this.styles} ref={this.canvasRef} height="490px" width="650px" />
+        <CanvasContainer ref={this.canvasRef} height="412px" width="550px" />
+        <StreamContainer>
+          <TableContainer>
+            {
+              suspectedObjects.length ? (
+                <table style={{width: '40%', marginTop: '10vh'}}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Time First Seen</th>
+                      <th>Duration</th>
+                      <th>Image Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      suspectedObjects.map((s, i) => (
+                        <tr key={s.title + i + s.timestamp.toString()}>
+                          <td>{s.title}</td>
+                          <td>{new Date(s.timestamp).toISOString()}</td>
+                          <td>{Math.floor((s.latestTimestamp - s.timestamp) / 1000)}s</td>
+                          <td>
+                            <a href="#" target="_blank">View Image</a>
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              ) : (
+                <div></div>
+              )
+            }
+          </TableContainer>
+        </StreamContainer>
       </StyledRootContainer>
     );
   }
@@ -183,14 +227,27 @@ const StyledRootContainer = styled.div`
   justify-content: center;
 `;
 
+const StreamContainer = styled.div`
+  width: 100%;
+  height: 80vh;
+  background-color: white;
+  margin-top: 5vh;
+`;
+
 const VideoContainer = styled.video`
   position: absolute;
-  top: 10vh;
+  top: 25vh;
   left: 10vw;
 `;
 
 const CanvasContainer = styled.canvas`
   position: absolute;
-  top: calc(10vh - 10px);
+  top: 25vh;
   left: 10vw;
+`;
+
+const TableContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 5vw;
 `;
